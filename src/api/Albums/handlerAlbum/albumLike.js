@@ -1,7 +1,8 @@
 class AlbumsHandler {
-  constructor(service, validator) {
+  constructor(service, validator, storageService) {
     this.service = service;
     this.validator = validator;
+    this.storageService = storageService;
 
     this.postAlbumLikeHandler = this.postAlbumLikeHandler.bind(this);
     this.deleteAlbumLikeHandler = this.deleteAlbumLikeHandler.bind(this);
