@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import { Pool } from 'pg';
-import mapDbAlbumtoModel from '../../../utils/album.js';
+import mapDbAlbumToModel from '../../../utils/album.js';
 import InvariantError from '../../exceptions/InvariantError.js';
 import NotFoundError from '../../exceptions/NotFoundError.js';
 import ClientError from '../../exceptions/ClientError.js';
@@ -49,7 +49,7 @@ class AlbumService {
 
     const resultSong = await this.pool.query(songList);
 
-    const album = result.rows.map(mapDbAlbumtoModel)[0];
+    const album = mapDbAlbumToModel(result.rows[0]);
     album.songs = resultSong.rows;
 
     return album;

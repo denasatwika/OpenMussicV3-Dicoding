@@ -59,17 +59,18 @@ class PlayListService {
       values: [id, playlistId, songId],
     };
 
-    const queryActivity = {
-      text: 'INSERT INTO playlist_song_activities VALUES($1, $2, $3, $4, $5, $6)',
-      values: [activityId, playlistId, songId, userId, 'add', time],
-    };
-    await this.pool.query(queryActivity);
-
     const result = await this.pool.query(query);
 
     if (!result.rows[0].id) {
       throw new InvariantError('Lagu gagal ditambahkan ke playlist');
     }
+
+    const queryActivity = {
+      text: 'INSERT INTO playlist_song_activities VALUES($1, $2, $3, $4, $5, $6)',
+      values: [activityId, playlistId, songId, userId, 'add', time],
+    };
+
+    await this.pool.query(queryActivity);
   }
 
   async getSongsInPlaylist(playlistId) {
@@ -118,8 +119,9 @@ class PlayListService {
   }
 
   async verifyPlaylistOwner(id, owner) {
+    console.log(`[DEBUG] Checking Owner. PlaylistId: ${id}, ExpectedOwner: ${owner}`);
     const query = {
-      text: 'SELECT * FROM playlists WHERE id = $1',
+      text: 'SELECT owner FROM playlists WHERE id = $1',
       values: [id],
     };
 
@@ -130,7 +132,10 @@ class PlayListService {
     }
 
     const playlist = result.rows[0];
+    console.log(`[DEBUG] Database Owner: ${playlist.owner}`);
+
     if (playlist.owner !== owner) {
+      console.log('[DEBUG] Result: 403 - Forbidden (Owner Mismatch)');
       throw new AuthorizationError('Anda tidak memiliki izin untuk mengakses resource ini');
     }
   }
@@ -148,15 +153,21 @@ class PlayListService {
   }
 
   async verifyPlaylistAccess(playlistId, userId) {
+    console.log(`[DEBUG] Verifying Access. Playlist: ${playlistId}, User: ${userId}`);
     try {
       await this.verifyPlaylistOwner(playlistId, userId);
     } catch (error) {
       if (error instanceof NotFoundError) {
+        console.log('[DEBUG] Access Denied: Playlist does not exist');
         throw error;
       }
+
+      console.log('[DEBUG] User is not owner, checking collaborations...');
       try {
         await this.collaborationService.verifyCollaborator(playlistId, userId);
+        console.log('[DEBUG] Access Granted: User is a Collaborator');
       } catch {
+        console.log('[DEBUG] Access Denied: User is not Owner nor Collaborator');
         throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
       }
     }

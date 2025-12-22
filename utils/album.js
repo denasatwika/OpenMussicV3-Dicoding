@@ -7,7 +7,7 @@ const mapDbAlbumtoModel = ({
   id,
   name,
   year,
-  coverUrl: cover || null,
+  coverUrl: cover ? `http://${process.env.HOST}:${process.env.PORT}/upload/images/${cover}` : null,
 });
 
 export default mapDbAlbumtoModel;
