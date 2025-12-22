@@ -8,12 +8,12 @@ import routes from './route.js';
 export default {
   name: 'albums',
   version: '1.0.0',
-  register: async (server, { service, validator }) => {
+  register: async (server, { service, validator, storageService }) => {
     const postAlbum = new PostAlbum(service, validator);
     const getAlbum = new GetAlbumById(service);
     const editAlbum = new EditAlbum(service, validator);
     const deleteAlbum = new DeleteAlbum(service);
-    const albumLikesHandler = new AlbumsHandler(service, validator);
+    const albumLikesHandler = new AlbumsHandler(service, storageService, validator);
 
     const albumsHandlers = {
       postAlbumHandler: postAlbum.postAlbumHandler,
