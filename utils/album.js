@@ -2,14 +2,12 @@ const mapDbAlbumtoModel = ({
   id,
   name,
   year,
-  create_at,
-  update_at,
+  cover,
 }) => ({
   id,
   name,
   year,
-  createAt: create_at,
-  updateAt: update_at,
+  coverUrl: cover || null,
 });
 
 export default mapDbAlbumtoModel;

@@ -2,6 +2,8 @@ import 'dotenv/config';
 import Hapi from '@hapi/hapi';
 import Jwt from '@hapi/jwt';
 import path from 'path';
+import Inert from '@hapi/inert';
+import { fileURLToPath } from 'url';
 
 import CollaborationsValidator from './validator/collaborations/index.js';
 import CollaborationsService from './services/postgres/colaborationService.js';
@@ -32,8 +34,10 @@ import ExportValidator from './validator/export/index.js';
 import ProducerService from './services/rabbitMQ/producerService.js';
 import Export from './api/Export/index.js';
 
-import UploadsValidator from './validator/upload/index.js';
 import StorageService from './services/storage/storageService.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const init = async () => {
   const collaborationsService = new CollaborationsService();
@@ -43,7 +47,6 @@ const init = async () => {
   const songService = new SongService();
   const authService = new AuthService();
   const storageService = new StorageService(path.resolve(__dirname, 'api/Albums/covers'));
-  const exportService = new ProducerService();
 
   const server = Hapi.server({
     port: process.env.PORT || 5000,
@@ -58,6 +61,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
@@ -89,6 +95,7 @@ const init = async () => {
       plugin: Albums,
       options: {
         service: albumService,
+        storageService: StorageService,
         validator: AlbumValidator,
       },
     },
@@ -122,13 +129,6 @@ const init = async () => {
         service: ProducerService,
         validator: ExportValidator,
         playlistsService: playlistService,
-      },
-    },
-    {
-      plugin: Uploads,
-      options: {
-        service: storageService,
-        validator: UploadsValidator,
       },
     },
   ]);
