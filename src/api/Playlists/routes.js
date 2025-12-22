@@ -35,6 +35,14 @@ const routes = (handler) => [
     handler: handler.deleteSongFromPlaylistHandler,
     options: { auth: 'openmusic_jwt' },
   },
+  {
+    method: 'GET',
+    path: '/playlists/{id}/activities',
+    handler: handler.getPlaylistActivitiesHandler, // Pastikan fungsi ini ada di AllHandler.js
+    options: {
+      auth: 'openmusic_jwt',
+    },
+  },
 ];
 
 export default routes;

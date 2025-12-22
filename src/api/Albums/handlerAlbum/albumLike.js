@@ -58,7 +58,7 @@ class AlbumsHandler {
     const { cover } = request.payload;
     const { id } = request.params;
 
-    this.validator.validateAlbumCoverHeader(cover.hapi.headers);
+    this.validator.validateImageHeaders(cover.hapi.headers);
 
     const filename = await this.storageService.writeFile(cover, cover.hapi);
     const coverUrl = `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`;
@@ -67,7 +67,7 @@ class AlbumsHandler {
 
     const response = h.response({
       status: 'success',
-      message: 'Sampul berhasil diunggah',
+      message: 'Gambar Sampul berhasil diunggah',
     });
     response.code(201);
     return response;

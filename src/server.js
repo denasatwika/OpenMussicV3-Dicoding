@@ -95,7 +95,7 @@ const init = async () => {
       plugin: Albums,
       options: {
         service: albumService,
-        storageService: storageService,
+        storageService,
         validator: AlbumValidator,
       },
     },
@@ -162,6 +162,15 @@ const init = async () => {
         message: 'Maaf, terjadi kegagalan pada server kami.',
       });
       newResponse.code(500);
+      return newResponse;
+    }
+
+    if (response.isBoom) {
+      const newResponse = h.response({
+        status: 'fail',
+        message: response.message,
+      });
+      newResponse.code(response.output.statusCode);
       return newResponse;
     }
 
