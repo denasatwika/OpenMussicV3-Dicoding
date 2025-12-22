@@ -38,7 +38,7 @@ const routes = (handler) => [
   {
     method: 'GET',
     path: '/playlists/{id}/activities',
-    handler: handler.getPlaylistActivitiesHandler, // Pastikan fungsi ini ada di AllHandler.js
+    handler: handler.getPlaylistActivitiesHandler,
     options: {
       auth: 'openmusic_jwt',
     },
