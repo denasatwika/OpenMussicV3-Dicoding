@@ -39,7 +39,7 @@ class CollaborationsHandler {
 
       console.log(`[DEBUG] Deleting Collaboration. Playlist: ${playlistId}, TargetUser: ${userId}, Requester: ${credentialId}`);
 
-      await this.playlistsService.verifyPlaylistOwner(playlistId, credentialId);
+      await this.playlistsService.verifyPlaylistAccess(playlistId, credentialId);
       console.log('[DEBUG] Requester is Owner, proceeding to delete...');
 
       await this.collaborationsService.deleteCollaboration(playlistId, userId);
