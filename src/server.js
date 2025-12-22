@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import Hapi from '@hapi/hapi';
 import Jwt from '@hapi/jwt';
+import path from 'path';
 
 import CollaborationsValidator from './validator/collaborations/index.js';
 import CollaborationsService from './services/postgres/colaborationService.js';
@@ -25,12 +26,24 @@ import Authentications from './api/Auth/index.js';
 import Albums from './api/Albums/index.js';
 import Songs from './api/Songs/index.js';
 
+import CacheService from './services/redis/cacheService.js';
+
+import ExportValidator from './validator/export/index.js';
+import ProducerService from './services/rabbitMQ/producerService.js';
+import Export from './api/Export/index.js';
+
+import UploadsValidator from './validator/upload/index.js';
+import StorageService from './services/storage/storageService.js';
+
 const init = async () => {
   const collaborationsService = new CollaborationsService();
   const playlistService = new PlaylistService(collaborationsService);
-  const albumService = new AlbumService();
+  const cacheService = new CacheService();
+  const albumService = new AlbumService(cacheService);
   const songService = new SongService();
   const authService = new AuthService();
+  const storageService = new StorageService(path.resolve(__dirname, 'api/Albums/covers'));
+  const exportService = new ProducerService();
 
   const server = Hapi.server({
     port: process.env.PORT || 5000,
@@ -103,7 +116,32 @@ const init = async () => {
         userService: authService,
       },
     },
+    {
+      plugin: Export,
+      options: {
+        service: ProducerService,
+        validator: ExportValidator,
+        playlistsService: playlistService,
+      },
+    },
+    {
+      plugin: Uploads,
+      options: {
+        service: storageService,
+        validator: UploadsValidator,
+      },
+    },
   ]);
+
+  server.route({
+    method: 'GET',
+    path: '/upload/images/{param*}',
+    handler: {
+      directory: {
+        path: path.resolve(__dirname, 'api/Albums/covers'),
+      },
+    },
+  });
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;

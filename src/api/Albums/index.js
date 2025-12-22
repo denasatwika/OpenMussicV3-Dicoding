@@ -2,6 +2,7 @@ import PostAlbum from './handlerAlbum/postAlbum.js';
 import GetAlbumById from './handlerAlbum/getAlbum.js';
 import EditAlbum from './handlerAlbum/editAlbum.js';
 import DeleteAlbum from './handlerAlbum/deleteAlbum.js';
+import AlbumsHandler from './handlerAlbum/albumLike.js';
 import routes from './route.js';
 
 export default {
@@ -12,12 +13,18 @@ export default {
     const getAlbum = new GetAlbumById(service);
     const editAlbum = new EditAlbum(service, validator);
     const deleteAlbum = new DeleteAlbum(service);
+    const albumLikesHandler = new AlbumsHandler(service, validator);
 
     const albumsHandlers = {
       postAlbumHandler: postAlbum.postAlbumHandler,
       getAlbumByIdHandler: getAlbum.getAlbumByIdHandler,
       editAlbumByIdHandler: editAlbum.editAlbumByIdHandler,
       deleteAlbumByIdHandler: deleteAlbum.deleteAlbumByIdHandler,
+      postAlbumLikeHandler: albumLikesHandler.postAlbumLikeHandler,
+      deleteAlbumLikeHandler: albumLikesHandler.deleteAlbumLikeHandler,
+      getAlbumLikesHandler: albumLikesHandler.getAlbumLikesHandler,
+      postUploadCoverHandler: albumLikesHandler.postUploadCoverHandler,
+
     };
 
     server.route(routes(albumsHandlers));
