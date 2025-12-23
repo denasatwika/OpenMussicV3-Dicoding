@@ -1,3 +1,9 @@
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const routes = (handler) => [
   {
     method: 'POST',
@@ -50,6 +56,15 @@ const routes = (handler) => [
         multipart: true,
         output: 'stream',
         maxBytes: 512000,
+      },
+    },
+  },
+  {
+    method: 'GET',
+    path: '/albums/covers/{param*}',
+    handler: {
+      directory: {
+        path: path.resolve(__dirname, 'covers'),
       },
     },
   },

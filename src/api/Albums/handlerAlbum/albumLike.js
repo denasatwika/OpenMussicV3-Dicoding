@@ -1,8 +1,8 @@
 class AlbumsHandler {
   constructor(service, storageService, validator) {
     this.service = service;
-    this.validator = validator;
     this.storageService = storageService;
+    this.validator = validator;
 
     this.postAlbumLikeHandler = this.postAlbumLikeHandler.bind(this);
     this.deleteAlbumLikeHandler = this.deleteAlbumLikeHandler.bind(this);
@@ -64,14 +64,14 @@ class AlbumsHandler {
       console.log('File "cover" tidak ditemukan di payload!');
     }
 
-    const { id } = request.params;
+    const albumId = request.params.id;
 
     this.validator.validateImageHeaders(cover.hapi.headers);
 
     const filename = await this.storageService.writeFile(cover, cover.hapi);
     const coverUrl = `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`;
 
-    await this.service.editAlbumCover(id, coverUrl);
+    await this.service.editAlbumCover(albumId, coverUrl);
 
     const response = h.response({
       status: 'success',

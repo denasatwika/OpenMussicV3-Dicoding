@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const AlbumSchema = Joi.object({
+export const AlbumSchema = Joi.object({
   name: Joi.string().required(),
   year: Joi.number()
     .integer()
@@ -10,4 +10,6 @@ const AlbumSchema = Joi.object({
 
 });
 
-export default AlbumSchema;
+export const ValidateHeadersSchema = Joi.object({
+  'content-type': Joi.string().valid('image/apng', 'image/avif', 'image/gif', 'image/jpeg', 'image/png', 'image/webp').required(),
+}).unknown();

@@ -35,7 +35,6 @@ import ProducerService from './services/rabbitMQ/producerService.js';
 import Export from './api/Export/index.js';
 
 import StorageService from './services/storage/storageService.js';
-import UploadsValidator from './validator/upload/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -99,7 +98,7 @@ const init = async () => {
         storageService,
         validator: {
           album: AlbumValidator,
-          upload: UploadsValidator,
+          // upload: UploadsValidator,
         },
       },
     },
@@ -137,15 +136,15 @@ const init = async () => {
     },
   ]);
 
-  server.route({
-    method: 'GET',
-    path: '/upload/images/{param*}',
-    handler: {
-      directory: {
-        path: path.resolve(__dirname, 'api/Albums/covers'),
-      },
-    },
-  });
+  // server.route({
+  //   method: 'GET',
+  //   path: '/upload/images/{param*}',
+  //   handler: {
+  //     directory: {
+  //       path: path.resolve(__dirname, 'api/Albums/covers'),
+  //     },
+  //   },
+  // });
 
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
