@@ -1,8 +1,8 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 const routes = (handler) => [
   {
@@ -54,6 +54,7 @@ const routes = (handler) => [
       payload: {
         allow: 'multipart/form-data',
         multipart: true,
+        parse: true,
         output: 'stream',
         maxBytes: 512000,
       },
@@ -64,7 +65,7 @@ const routes = (handler) => [
     path: '/albums/covers/{param*}',
     handler: {
       directory: {
-        path: path.resolve(__dirname, 'covers'),
+        path: path.resolve(dirname, 'covers'),
       },
     },
   },

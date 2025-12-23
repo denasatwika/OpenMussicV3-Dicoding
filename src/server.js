@@ -35,9 +35,10 @@ import ProducerService from './services/rabbitMQ/producerService.js';
 import Export from './api/Export/index.js';
 
 import StorageService from './services/storage/storageService.js';
+import UploadsValidator from './validator/upload/index.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 const init = async () => {
   const collaborationsService = new CollaborationsService();
@@ -46,7 +47,7 @@ const init = async () => {
   const albumService = new AlbumService(cacheService);
   const songService = new SongService();
   const authService = new AuthService();
-  const storageService = new StorageService(path.resolve(__dirname, 'api/Albums/covers'));
+  const storageService = new StorageService(path.resolve(dirname, 'api/Albums/covers'));
 
   const server = Hapi.server({
     port: process.env.PORT || 5000,
@@ -98,7 +99,7 @@ const init = async () => {
         storageService,
         validator: {
           album: AlbumValidator,
-          // upload: UploadsValidator,
+          upload: UploadsValidator,
         },
       },
     },
