@@ -9,11 +9,11 @@ export default {
   name: 'albums',
   version: '1.0.0',
   register: async (server, { service, validator, storageService }) => {
-    const postAlbum = new PostAlbum(service, validator);
+    const postAlbum = new PostAlbum(service, validator.album);
     const getAlbum = new GetAlbumById(service);
-    const editAlbum = new EditAlbum(service, validator);
+    const editAlbum = new EditAlbum(service, validator.album);
     const deleteAlbum = new DeleteAlbum(service);
-    const albumLikesHandler = new AlbumsHandler(service, storageService, validator);
+    const albumLikesHandler = new AlbumsHandler(service, storageService, validator.upload);
 
     const albumsHandlers = {
       postAlbumHandler: postAlbum.postAlbumHandler,
@@ -23,7 +23,7 @@ export default {
       postAlbumLikeHandler: albumLikesHandler.postAlbumLikeHandler,
       deleteAlbumLikeHandler: albumLikesHandler.deleteAlbumLikeHandler,
       getAlbumLikesHandler: albumLikesHandler.getAlbumLikesHandler,
-      postUploadCoverHandler: albumLikesHandler.postUploadCoverHandler,
+      postUploadCoverHandler: albumLikesHandler.postUploadCoverHandler.bind(albumLikesHandler),
 
     };
 

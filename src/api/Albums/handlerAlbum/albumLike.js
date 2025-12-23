@@ -1,5 +1,5 @@
 class AlbumsHandler {
-  constructor(service, validator, storageService) {
+  constructor(service, storageService, validator) {
     this.service = service;
     this.validator = validator;
     this.storageService = storageService;
@@ -7,6 +7,7 @@ class AlbumsHandler {
     this.postAlbumLikeHandler = this.postAlbumLikeHandler.bind(this);
     this.deleteAlbumLikeHandler = this.deleteAlbumLikeHandler.bind(this);
     this.getAlbumLikesHandler = this.getAlbumLikesHandler.bind(this);
+    this.postUploadCoverHandler = this.postUploadCoverHandler.bind(this);
   }
 
   async postAlbumLikeHandler(request, h) {
@@ -47,15 +48,22 @@ class AlbumsHandler {
       },
     });
 
-    if (source === 'cache') {
-      response.header('X-Data-Source', 'cache');
-    }
+    response.header('X-Data-Source', source);
 
     return response;
   }
 
   async postUploadCoverHandler(request, h) {
+    console.log('Payload diterima:', request.payload);
     const { cover } = request.payload;
+
+    if (cover) {
+      console.log('Detail File (hapi):', cover.hapi);
+      console.log('Headers File:', cover.hapi.headers);
+    } else {
+      console.log('File "cover" tidak ditemukan di payload!');
+    }
+
     const { id } = request.params;
 
     this.validator.validateImageHeaders(cover.hapi.headers);
@@ -67,7 +75,7 @@ class AlbumsHandler {
 
     const response = h.response({
       status: 'success',
-      message: 'Gambar Sampul berhasil diunggah',
+      message: 'Sampul berhasil diunggah',
     });
     response.code(201);
     return response;

@@ -35,6 +35,7 @@ import ProducerService from './services/rabbitMQ/producerService.js';
 import Export from './api/Export/index.js';
 
 import StorageService from './services/storage/storageService.js';
+import UploadsValidator from './validator/upload/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -96,7 +97,10 @@ const init = async () => {
       options: {
         service: albumService,
         storageService,
-        validator: AlbumValidator,
+        validator: {
+          album: AlbumValidator,
+          upload: UploadsValidator,
+        },
       },
     },
     {
@@ -146,6 +150,15 @@ const init = async () => {
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
 
+    if (response.isBoom && response.output.statusCode === 415) {
+      console.log('=== DEBUG SPESIFIK 415 ===');
+      console.log('Path:', request.path);
+      console.log('Method:', request.method);
+      console.log('All Headers:', JSON.stringify(request.headers, null, 2));
+      console.log('Payload Type:', typeof request.payload);
+      console.log('==========================');
+    }
+
     if (response instanceof ClientError) {
       const newResponse = h.response({
         status: 'fail',
@@ -166,12 +179,17 @@ const init = async () => {
     }
 
     if (response.isBoom) {
-      const newResponse = h.response({
-        status: 'fail',
-        message: response.message,
-      });
-      newResponse.code(response.output.statusCode);
-      return newResponse;
+      console.log('--- DEBUG BOOM ERROR ---');
+      console.log('Status Code:', response.output.statusCode);
+      console.log('Message:', response.message);
+      console.log('Data (Joi):', response.data); // Biasanya berisi detail error Joi
+      console.log('------------------------');
+      // const newResponse = h.response({
+      //   status: 'fail',
+      //   message: response.message,
+      // });
+      // newResponse.code(response.output.statusCode);
+      // return newResponse;
     }
 
     return h.continue;
